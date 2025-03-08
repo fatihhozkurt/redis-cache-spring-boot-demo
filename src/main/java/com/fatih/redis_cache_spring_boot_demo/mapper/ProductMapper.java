@@ -7,7 +7,6 @@ import com.fatih.redis_cache_spring_boot_demo.entity.CategoryEntity;
 import com.fatih.redis_cache_spring_boot_demo.entity.ProductEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
