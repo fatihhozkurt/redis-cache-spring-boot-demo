@@ -2,7 +2,6 @@ package com.fatih.redis_cache_spring_boot_demo.mapper;
 
 import com.fatih.redis_cache_spring_boot_demo.dto.request.CreateCategoryRequest;
 import com.fatih.redis_cache_spring_boot_demo.dto.request.UpdateCategoryRequest;
-import com.fatih.redis_cache_spring_boot_demo.dto.request.UpdateProductRequest;
 import com.fatih.redis_cache_spring_boot_demo.dto.response.CategoryResponse;
 import com.fatih.redis_cache_spring_boot_demo.entity.CategoryEntity;
 import org.springframework.stereotype.Component;

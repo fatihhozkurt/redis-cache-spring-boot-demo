@@ -17,8 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
+/**
+ * REST controller for managing categories.
+ * Implements {@link CategoryApi} to handle category-related operations.
+ */
 @RestController
 @RequiredArgsConstructor
 public class CategoryController implements CategoryApi {
@@ -26,6 +29,12 @@ public class CategoryController implements CategoryApi {
     private final CategoryService categoryService;
     private final CategoryMapper categoryMapper;
 
+    /**
+     * Creates a new category.
+     *
+     * @param createCategoryRequest the category creation request
+     * @return ResponseEntity containing the created category
+     */
     @Override
     public ResponseEntity<CategoryResponse> createCategory(CreateCategoryRequest createCategoryRequest) {
 
@@ -39,6 +48,12 @@ public class CategoryController implements CategoryApi {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    /**
+     * Updates an existing category.
+     *
+     * @param updateCategoryRequest the category update request
+     * @return ResponseEntity containing the updated category
+     */
     @Override
     public ResponseEntity<CategoryResponse> updateCategory(UpdateCategoryRequest updateCategoryRequest) {
 
@@ -51,6 +66,12 @@ public class CategoryController implements CategoryApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    /**
+     * Deletes a category by its ID.
+     *
+     * @param id the category ID
+     * @return ResponseEntity with HTTP status NO_CONTENT
+     */
     @Override
     public ResponseEntity<HttpStatus> deleteCategory(UUID id) {
 
@@ -59,6 +80,12 @@ public class CategoryController implements CategoryApi {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    /**
+     * Retrieves a category by its ID.
+     *
+     * @param id the category ID
+     * @return ResponseEntity containing the found category
+     */
     @Override
     public ResponseEntity<CategoryResponse> getCategoryById(UUID id) {
 
@@ -69,6 +96,12 @@ public class CategoryController implements CategoryApi {
         return new ResponseEntity<>(response, HttpStatus.FOUND);
     }
 
+    /**
+     * Retrieves all categories with pagination support.
+     *
+     * @param pageable pagination information
+     * @return ResponseEntity containing a paginated list of categories
+     */
     @Override
     public ResponseEntity<PageImpl<CategoryResponse>> getAllCategories(Pageable pageable) {
         Page<CategoryEntity> foundCategories = categoryService.getAllCategories(pageable);

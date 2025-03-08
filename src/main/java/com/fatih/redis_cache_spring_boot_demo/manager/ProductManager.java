@@ -17,12 +17,22 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Service class for managing product-related operations.
+ * Implements caching mechanisms for better performance.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductManager implements ProductService {
 
     private final ProductDao productDao;
 
+    /**
+     * Creates a new product and clears the product cache.
+     *
+     * @param requestedProduct the product entity to be created
+     * @return the saved ProductEntity
+     */
     @CacheEvict(cacheNames = "products", allEntries = true)
     @Transactional
     @Override
@@ -31,6 +41,12 @@ public class ProductManager implements ProductService {
         return productDao.save(requestedProduct);
     }
 
+    /**
+     * Updates an existing product and updates the cache.
+     *
+     * @param requestedProduct the product entity with updated details
+     * @return the updated ProductEntity
+     */
     @Caching(put = {@CachePut(cacheNames = "product_id", key = "'getProductById' + #result.id", unless = "#result == null")},
             evict = {@CacheEvict(cacheNames = "products", allEntries = true)})
     @Transactional
@@ -44,6 +60,12 @@ public class ProductManager implements ProductService {
         return productDao.save(updatedProduct);
     }
 
+    /**
+     * Retrieves a product by its ID with caching support.
+     *
+     * @param id the unique identifier of the product
+     * @return the found ProductEntity
+     */
     @Cacheable(cacheNames = "product_id", key = "#root.methodName +  #id", unless = "#result == null")
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
@@ -53,6 +75,11 @@ public class ProductManager implements ProductService {
                 .orElseThrow(() -> new RuntimeException("Product not found"));
     }
 
+    /**
+     * Deletes a product by its ID and clears related caches.
+     *
+     * @param id the unique identifier of the product to be deleted
+     */
     @CacheEvict(cacheNames = {"products", "product_id"}, allEntries = true)
     @Transactional
     @Override
@@ -63,6 +90,12 @@ public class ProductManager implements ProductService {
         productDao.delete(foundProduct);
     }
 
+    /**
+     * Retrieves all products with caching support.
+     *
+     * @param pageable pagination details
+     * @return a list of ProductEntity
+     */
     @Cacheable(cacheNames = "products", key = "#root.methodName", unless = "#result == null")
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     @Override
@@ -73,6 +106,13 @@ public class ProductManager implements ProductService {
         return foundProducts.getContent();
     }
 
+    /**
+     * Checks and updates the product details before saving.
+     *
+     * @param requestedProduct the product entity with new details
+     * @param foundProduct the existing product entity
+     * @return the updated ProductEntity
+     */
     @Transactional
     protected ProductEntity checkUpdateConditions(ProductEntity requestedProduct, ProductEntity foundProduct) {
 
