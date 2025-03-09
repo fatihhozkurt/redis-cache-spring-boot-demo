@@ -38,14 +38,14 @@ public class RedisConfig {
      */
     @Bean
     public RedisSerializer<Object> redisJsonSerializer() {
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        ObjectMapper mapper = new ObjectMapper(); // Creates an ObjectMapper for JSON processing.
+        mapper.registerModule(new JavaTimeModule()); // Supports Java 8 date and time objects.
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS); // Stores dates in ISO format instead of timestamps.
         mapper.activateDefaultTyping(
                 LaissezFaireSubTypeValidator.instance,
                 ObjectMapper.DefaultTyping.NON_FINAL,
                 JsonTypeInfo.As.PROPERTY
-        );
+        ); // Enables storing type information for objects in JSON to ensure correct deserialization.
         return new GenericJackson2JsonRedisSerializer(mapper);
     }
 
@@ -57,7 +57,7 @@ public class RedisConfig {
      */
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-        return new LettuceConnectionFactory("localhost", 6379);
+        return new LettuceConnectionFactory("localhost", 6379); // Connects to Redis at localhost:6379.
     }
 
     /**
@@ -69,11 +69,11 @@ public class RedisConfig {
     @Bean
     public RedisTemplate<String, Object> redisTemplate() {
         final RedisTemplate<String, Object> redisTemplate = new RedisTemplate<>();
-        redisTemplate.setKeySerializer(new StringRedisSerializer());
-        redisTemplate.setHashKeySerializer(new GenericToStringSerializer<>(Object.class));
-        redisTemplate.setValueSerializer(redisJsonSerializer());
-        redisTemplate.setHashValueSerializer(redisJsonSerializer());
-        redisTemplate.setConnectionFactory(redisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer()); // Stores keys in string format.
+        redisTemplate.setHashKeySerializer(new GenericToStringSerializer<>(Object.class)); // Stores hash keys in string format.
+        redisTemplate.setValueSerializer(redisJsonSerializer()); // Stores values in JSON format.
+        redisTemplate.setHashValueSerializer(redisJsonSerializer()); // Stores hash values in JSON format.
+        redisTemplate.setConnectionFactory(redisConnectionFactory()); // Uses the Redis connection.
         return redisTemplate;
     }
 
@@ -87,14 +87,14 @@ public class RedisConfig {
     @Bean(value = "cacheManager")
     public CacheManager redisCacheManager(RedisConnectionFactory redisConnectionFactory) {
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
-                .disableCachingNullValues()
+                .disableCachingNullValues() // Disables caching of null values.
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair.fromSerializer(redisJsonSerializer())
-                );
-        redisCacheConfiguration.usePrefix();
+                ); // Stores values in JSON format
+        redisCacheConfiguration.usePrefix(); // Adds a prefix to cache keys to prevent collisions.
 
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory)
-                .cacheDefaults(redisCacheConfiguration)
-                .build();
+                .cacheDefaults(redisCacheConfiguration) // Applies default cache configuration.
+                .build(); // Builds the CacheManager instance.
     }
 }
